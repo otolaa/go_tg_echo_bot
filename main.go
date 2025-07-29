@@ -64,7 +64,7 @@ func sendResponse(update Update) error {
 func main() {
 	//~~~~
 	fmt.Println("BOT_TOKEN → " + botToken)
-	fmt.Println("BOT_URL → " + botUrl)
+	fmt.Println("BOT_API → " + botApi)
 	//~~~~
 
 	offset := 0
@@ -87,10 +87,34 @@ func main() {
 		formatted := fmt.Sprintf("%02d:%02d:%02d", t.Hour(), t.Minute(), t.Second())
 
 		//~~~~
-		fmt.Println(updates)
-		fmt.Println(formatted)
+		fmt.Println(formatted, updates)
 		//~~~~
 
 		time.Sleep(2 * time.Second)
 	}
+}
+
+func dellWebhook() error {
+	resp, err := http.Get(botUrl + "/deleteWebhook")
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var restDell map[string]interface{}
+	err = json.Unmarshal(body, &restDell)
+	if err != nil {
+		return err
+	}
+
+	//~~~~
+	fmt.Println(restDell["description"], restDell["ok"], restDell["result"])
+	//~~~~
+
+	return err
 }

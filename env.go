@@ -30,4 +30,9 @@ func init() {
 	}
 
 	botUrl = botApi + botToken
+
+	err = dellWebhook()
+	if err != nil {
+		panic(err)
+	}
 }
