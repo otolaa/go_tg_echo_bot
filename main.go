@@ -60,40 +60,7 @@ func sendResponse(update Update) error {
 	return err
 }
 
-// entry point
-func main() {
-	//~~~~
-	fmt.Println("BOT_TOKEN → " + botToken)
-	fmt.Println("BOT_API → " + botApi)
-	//~~~~
-
-	offset := 0
-	for {
-		updates, err := getUpdate(offset)
-		if err != nil {
-			log.Println("→", err.Error())
-		}
-
-		for _, update := range updates {
-			err = sendResponse(update)
-			if err != nil {
-				log.Println("→", err.Error())
-			}
-
-			offset = update.UpdateID + 1
-		}
-
-		t := time.Now()
-		formatted := fmt.Sprintf("%02d:%02d:%02d", t.Hour(), t.Minute(), t.Second())
-
-		//~~~~
-		fmt.Println(formatted, updates)
-		//~~~~
-
-		time.Sleep(2 * time.Second)
-	}
-}
-
+// delete webhook
 func dellWebhook() error {
 	resp, err := http.Get(botUrl + "/deleteWebhook")
 	if err != nil {
@@ -106,15 +73,44 @@ func dellWebhook() error {
 		return err
 	}
 
-	var restDell map[string]interface{}
-	err = json.Unmarshal(body, &restDell)
+	restDell := &DeleteWebhook{}
+	err = json.Unmarshal(body, restDell)
 	if err != nil {
 		return err
 	}
 
-	//~~~~
-	fmt.Println(restDell["description"], restDell["ok"], restDell["result"])
-	//~~~~
+	p(2, suffixLine)
+	p(2, "[+] ", restDell.Description, nbsp, restDell.Ok, nbsp, restDell.Result)
 
 	return err
+}
+
+// entry point
+func main() {
+	p(3, "BOT_TOKEN → ", botToken)
+	p(3, "BOT_API → ", botApi)
+
+	offset := 0
+	for {
+		updates, err := getUpdate(offset)
+		if err != nil {
+			log.Println("→", err.Error())
+		}
+
+		for _, update := range updates {
+			err = sendResponse(update)
+			if err != nil {
+				p(1, err.Error())
+			}
+
+			offset = update.UpdateID + 1
+		}
+
+		t := time.Now()
+		formatted := fmt.Sprintf("%02d:%02d:%02d", t.Hour(), t.Minute(), t.Second())
+
+		p(2, formatted, nbsp, updates)
+
+		time.Sleep(2 * time.Second)
+	}
 }

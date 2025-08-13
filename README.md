@@ -1,4 +1,4 @@
-# very simple echo bot
+# 🌵 simple echo bot
 
 You must have a token from the bot.
 And write the token to .env
