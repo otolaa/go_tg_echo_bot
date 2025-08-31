@@ -23,9 +23,3 @@ type BotMessage struct {
 	ChatID int    `json:"chat_id"`
 	Text   string `json:"text"`
 }
-
-type DeleteWebhook struct {
-	Description string `json:"description"`
-	Ok          bool   `json:"ok"`
-	Result      bool   `json:"result"`
-}

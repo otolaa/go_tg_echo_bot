@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -14,13 +14,24 @@ import (
 
 // update request
 func getUpdate(offset int) ([]Update, error) {
-	resp, err := http.Get(botUrl + "/getUpdates" + "?offset=" + strconv.Itoa(offset))
+	allowed_updates := []string{"message", "edited_channel_post", "callback_query"}
+	jsonData, err := json.Marshal(allowed_updates)
+	if err != nil {
+		return nil, err
+	}
+
+	urlGet := botUrl + "/getUpdates"
+	urlGet += "?offset=" + strconv.Itoa(offset)
+	urlGet += "&allowed_updates=" + string(jsonData)
+	urlGet += "&limit=" + "10"
+
+	resp, err := http.Get(urlGet)
 	if err != nil {
 		return nil, err
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -68,19 +79,13 @@ func dellWebhook() error {
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	restDell := &DeleteWebhook{}
-	err = json.Unmarshal(body, restDell)
-	if err != nil {
-		return err
-	}
-
-	p(2, suffixLine)
-	p(2, "[+] ", restDell.Description, nbsp, restDell.Ok, nbsp, restDell.Result)
+	p(4, suffixLine+"\n", string(body))
 
 	return err
 }
