@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -10,6 +12,11 @@ var (
 	botToken string
 	botApi   string = "https://api.telegram.org/bot"
 	botUrl   string
+
+	suffix     string = "~"
+	nbsp       string = " / "
+	suffixLine string = strings.Repeat(suffix, 35)
+	suffixEnd  string = "\033[0m\n"
 )
 
 func init() {
@@ -35,4 +42,9 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func p(color int, str ...any) {
+	suffixColor := "\033[3" + strconv.Itoa(color) + "m"
+	fmt.Printf("%s%s%s", suffixColor, fmt.Sprint(str...), suffixEnd)
 }
